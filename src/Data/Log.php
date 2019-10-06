@@ -18,13 +18,6 @@ class Log
     private $file;
 
     /**
-     * The data in memory.
-     *
-     * @var array
-     */
-    private $data = [];
-
-    /**
      * Constructor.
      *
      * @param string $file A path for the JSON file

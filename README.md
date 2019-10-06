@@ -2,6 +2,12 @@
 
 Quick and easy data caching in the filesystem.
 
+### Install
+
+```bash
+$ composer require chrisullyott/simple-cache
+```
+
 ### Instantiate
 
 ```php

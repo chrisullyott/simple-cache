@@ -430,18 +430,6 @@ class Cache
     }
 
     /**
-     * Move the cache's expiration up to the next time.
-     *
-     * @return boolean Whether the catalog was updated
-     */
-    private function increment()
-    {
-        return $this->getCatalog()->merge([
-            'expireTime' => Time::nextExpire($this->expire, $this->offset)
-        ]);
-    }
-
-    /**
      * Invalidate this cache.
      *
      * @return boolean Whether the cache was invalidated

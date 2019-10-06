@@ -39,3 +39,9 @@ echo $cache->get(); // "Some data"
 $cache = new Cache('my_key');
 echo $cache->clear();
 ```
+
+### Testing
+
+```bash
+./vendor/bin/phpunit --configuration=./tests/phpunit.xml
+```

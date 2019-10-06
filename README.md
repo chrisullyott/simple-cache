@@ -2,6 +2,8 @@
 
 Quick and easy data caching in the filesystem.
 
+Keeps previous entries for future reference and cleans up old entries on a regular basis.
+
 ### Install
 
 ```bash
@@ -43,5 +45,5 @@ echo $cache->clear();
 ### Testing
 
 ```bash
-./vendor/bin/phpunit --configuration=./tests/phpunit.xml
+$ ./vendor/bin/phpunit --configuration=./tests/phpunit.xml
 ```

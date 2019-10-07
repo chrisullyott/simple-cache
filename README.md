@@ -56,6 +56,14 @@ if (!$data) {
 print_r($data);
 ```
 
+### Expiration
+
+The cache will expire after a certain amount of time, and `get()` will return false. To set the expiration frequency, use the second parameter of the constructor, for example "hourly", "nightly", or "weekly":
+
+```php
+$cache = new Cache('my_key', 'hourly');
+```
+
 ### Testing
 
 ```bash

@@ -41,6 +41,8 @@ $cache->clear();
 ### Usage
 
 ```php
+<?php
+
 require 'vendor/autoload.php';
 
 use ChrisUllyott\Cache;

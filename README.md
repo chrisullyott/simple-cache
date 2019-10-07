@@ -50,7 +50,6 @@ require 'vendor/autoload.php';
 use ChrisUllyott\Cache;
 
 $cache = new Cache('my_key');
-
 $data = $cache->get();
 
 if (!$data) {

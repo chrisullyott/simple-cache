@@ -331,6 +331,16 @@ class Cache
     }
 
     /**
+     * Get the history list.
+     *
+     * @return array
+     */
+    private function getHistory()
+    {
+        return $this->getCatalog()->get('history');
+    }
+
+    /**
      * Read the contents of the cache in a given history state.
      *
      * @param  integer $index Which history state to read (defaults to latest)
@@ -338,7 +348,7 @@ class Cache
      */
     private function readFromHistory($index = 0)
     {
-        $history = $this->getCatalog()->get('history');
+        $history = $this->getHistory();
 
         if (isset($history[$index]['file'])) {
             $file = File::path($this->getCachePath(), $history[$index]['file']);
@@ -357,7 +367,7 @@ class Cache
      */
     private function addToHistory($file, array $extraData = [])
     {
-        $history = $this->getCatalog()->get('history');
+        $history = $this->getHistory();
 
         $historyState = array_merge($extraData, [
             'file' => basename($file),
@@ -381,7 +391,7 @@ class Cache
      */
     private function cleanupHistory()
     {
-        $history = $this->getCatalog()->get('history');
+        $history = $this->getHistory();
         $history = array_slice($history, 0, $this->historyLimit);
 
         $filesInCache = File::listDir($this->getCachePath());

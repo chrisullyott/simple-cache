@@ -32,6 +32,12 @@ $cache->set("Some data");
 echo $cache->get(); // "Some data"
 ```
 
+### Invalidating
+
+```php
+$cache->invalidate();
+```
+
 ### Clearing 
 
 ```php

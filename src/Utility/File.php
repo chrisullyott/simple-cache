@@ -15,17 +15,11 @@ class File
      */
     public static function path()
     {
-        $parts = func_get_args();
-
         $s = DIRECTORY_SEPARATOR;
+        $path = implode($s, func_get_args());
+        $pattern = '/' . preg_quote($s, $s) . '{2,}/';
 
-        $path = rtrim(array_shift($parts), $s) . $s;
-
-        foreach ($parts as $p) {
-            $path .= trim($p, $s) . $s;
-        }
-
-        return rtrim($path, $s);
+        return preg_replace($pattern, $s, rtrim($path, $s));
     }
 
     /**

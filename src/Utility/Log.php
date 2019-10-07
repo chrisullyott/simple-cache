@@ -4,7 +4,7 @@
  * Persists data in a JSON file.
  */
 
-namespace ChrisUllyott\Data;
+namespace ChrisUllyott\Utility;
 
 use ChrisUllyott\Utility\File;
 
@@ -18,6 +18,20 @@ class Log
     private $file;
 
     /**
+     * A copy of the data fetched from storage.
+     *
+     * @var array
+     */
+    private $copy = [];
+
+    /**
+     * The data in memory.
+     *
+     * @var array
+     */
+    private $data = [];
+
+    /**
      * Constructor.
      *
      * @param string $file A path for the JSON file
@@ -25,17 +39,11 @@ class Log
     public function __construct($file)
     {
         $this->file = $file;
-        File::createDir(dirname($this->file));
-    }
 
-    /**
-     * Get the path for the JSON file.
-     *
-     * @return string
-     */
-    public function getFile()
-    {
-        return $this->file;
+        if (file_exists($this->file)) {
+            $this->data = json_decode(File::read($this->file), true);
+            $this->copy = $this->data;
+        }
     }
 
     /**
@@ -46,9 +54,7 @@ class Log
      */
     public function get($key)
     {
-        $array = $this->getAll();
-
-        return isset($array[$key]) ? $array[$key] : null;
+        return isset($this->data[$key]) ? $this->data[$key] : null;
     }
 
     /**
@@ -58,10 +64,7 @@ class Log
      */
     public function getAll()
     {
-        $json = File::read($this->getFile());
-        $array = json_decode($json, true);
-
-        return is_array($array) ? $array : [];
+        return $this->data;
     }
 
     /**
@@ -73,9 +76,7 @@ class Log
      */
     public function set($key, $value = null)
     {
-        $array = $this->getAll();
-        $array[$key] = $value;
-        $this->save($array);
+        $this->data[$key] = $value;
 
         return $this;
     }
@@ -88,7 +89,7 @@ class Log
      */
     public function setAll(array $array)
     {
-        $this->save($array);
+        $this->data = $array;
 
         return $this;
     }
@@ -101,8 +102,7 @@ class Log
      */
     public function merge(array $array)
     {
-       $array = array_merge($this->getAll(), $array);
-       $this->save($array);
+       $this->data = array_merge($this->data, $array);
 
        return $this;
     }
@@ -115,25 +115,31 @@ class Log
      */
     public function delete($key)
     {
-        $array = $this->getAll();
-
-        if (isset($array[$key])) {
-            unset($array[$key]);
+        if (isset($this->data[$key])) {
+            unset($this->data[$key]);
         }
-
-        $this->save($array);
 
         return $this;
     }
 
     /**
-     * Persist an array of data.
+     * Whether the data has been modified.
      *
-     * @param  array $array The array of data to store
-     * @return bool         Whether the file was written
+     * @return bool
      */
-    private function save(array $array)
+    public function hasChanged()
     {
-        return File::write($this->getFile(), json_encode($array, JSON_PRETTY_PRINT));
+        return serialize($this->data) !== serialize($this->copy);
+    }
+
+    /**
+     * Save the data to disk.
+     */
+    public function __destruct()
+    {
+        if ($this->hasChanged()) {
+            File::createDir(dirname($this->file));
+            File::write($this->file, json_encode($this->data, JSON_PRETTY_PRINT));
+        }
     }
 }

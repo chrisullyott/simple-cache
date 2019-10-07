@@ -7,37 +7,17 @@ use ChrisUllyott\Cache;
 
 class CacheTest extends \PHPUnit_Framework_TestCase
 {
-    private $cache;
-
     /**
-     * Get a Cache object.
+     * Test whether we can cache data.
      */
-    public function getCache()
+    public function testSetAndGet()
     {
-        if (is_null($this->cache)) {
-            $this->cache = new Cache('my_key');
-        }
+        $cache = new Cache('test_cache_key');
 
-        return $this->cache;
-    }
-
-    /**
-     * Test whether data can be stored.
-     */
-    public function testSet()
-    {
-        $set = $this->getCache()->set("Some data");
-
+        $set = $cache->set('Some content to store');
         $this->assertTrue($set);
-    }
 
-    /**
-     * Test whether data can be stored.
-     */
-    public function testGet()
-    {
-        $data = $this->getCache()->get();
-
-        $this->assertNotEmpty($data);
+        $get = $cache->get();
+        $this->assertNotEmpty($get);
     }
 }

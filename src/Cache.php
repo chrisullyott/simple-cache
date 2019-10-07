@@ -6,9 +6,9 @@
 
 namespace ChrisUllyott;
 
-use ChrisUllyott\Data\Catalog;
-use ChrisUllyott\Utility\File;
+use ChrisUllyott\Utility\Log;
 use ChrisUllyott\Utility\Time;
+use ChrisUllyott\Utility\File;
 
 class Cache
 {
@@ -215,7 +215,7 @@ class Cache
     private function getCatalog()
     {
         if (!$this->catalog) {
-            $this->catalog = new Catalog($this->getCatalogPath());
+            $this->catalog = new Log($this->getCatalogPath());
         }
 
         return $this->catalog;
@@ -381,7 +381,7 @@ class Cache
      */
     private function cleanupHistory()
     {
-        $history = $this->getCatalog()->get('history', true);
+        $history = $this->getCatalog()->get('history');
         $history = array_slice($history, 0, $this->historyLimit);
 
         $filesInCache = File::listDir($this->getCachePath());

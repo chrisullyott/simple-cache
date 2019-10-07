@@ -14,7 +14,7 @@ class CacheTest extends \PHPUnit_Framework_TestCase
     {
         $cache = new Cache('my_key');
 
-        $set = $cache->set('Some content to store');
+        $set = $cache->set(['data' => 'Some data']);
         $this->assertTrue($set);
 
         $get = $cache->get();

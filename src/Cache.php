@@ -291,7 +291,7 @@ class Cache
         $file = File::availablePath($this->getCachePath());
 
         // Stop if regexes do not allow this content.
-        if ($this->passesRegex($contents) && File::write($file, $contents)) {
+        if ($this->passesRegex($contents) && File::write($file, serialize($contents))) {
             return $this->addToHistory($file, $historyData) && $this->cleanup();
         }
 
@@ -352,7 +352,7 @@ class Cache
 
         if (isset($history[$index]['file'])) {
             $file = File::path($this->getCachePath(), $history[$index]['file']);
-            return File::read($file);
+            return unserialize(File::read($file));
         }
 
         return null;

@@ -74,7 +74,7 @@ class Log
      * @param string|integer $value The value to store
      * @return self
      */
-    public function set($key, $value = null)
+    public function set($key, $value)
     {
         $this->data[$key] = $value;
 

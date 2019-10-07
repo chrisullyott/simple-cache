@@ -42,6 +42,25 @@ $cache = new Cache('my_key');
 echo $cache->clear();
 ```
 
+### Usage
+
+```php
+require 'vendor/autoload.php';
+
+use ChrisUllyott\Cache;
+
+$cache = new Cache('my_key');
+
+$data = $cache->get();
+
+if (!$data) {
+    $data = my_api_request();
+    $cache->set($data);
+}
+
+print_r($data);
+```
+
 ### Testing
 
 ```bash

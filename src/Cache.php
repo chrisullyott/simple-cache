@@ -48,13 +48,6 @@ class Cache
     private $expireTime;
 
     /**
-     * The path for all caches.
-     *
-     * @var string
-     */
-    private $container = 'cache';
-
-    /**
      * The cache directory path.
      *
      * @var string
@@ -146,7 +139,7 @@ class Cache
     private function getCacheDir()
     {
         if (!$this->cacheDir) {
-            $this->cacheDir = File::path($this->container, $this->getKey());
+            $this->cacheDir = File::path('cache');
         }
 
         return $this->cacheDir;
@@ -230,7 +223,7 @@ class Cache
     }
 
     /**
-     * Clear the cache. If a key is not specified, the container is cleared.
+     * Clear this cache.
      *
      * @return boolean Whether the cache was cleared
      */

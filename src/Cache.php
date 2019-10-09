@@ -7,7 +7,6 @@
 namespace ChrisUllyott;
 
 use ChrisUllyott\Utility\Log;
-use ChrisUllyott\Utility\Time;
 use ChrisUllyott\Utility\File;
 
 class Cache
@@ -18,34 +17,6 @@ class Cache
      * @var string
      */
     public $id;
-
-    /**
-     * The expiration frequency of this cache.
-     *
-     * @var string
-     */
-    private $expire = 'weekly';
-
-    /**
-     * The time this class began to run.
-     *
-     * @var integer
-     */
-    private $runTime;
-
-    /**
-     * The time this cache was created.
-     *
-     * @var integer
-     */
-    private $createdTime;
-
-    /**
-     * The time this cache expires.
-     *
-     * @var integer
-     */
-    private $expireTime;
 
     /**
      * The cache directory path.
@@ -74,10 +45,7 @@ class Cache
      * @var array
      */
     private static $storedProperties = [
-        'id',
-        'expire',
-        'createdTime',
-        'expireTime'
+        'id'
     ];
 
     /**
@@ -88,8 +56,6 @@ class Cache
     public function __construct($id)
     {
         $this->id = $id;
-        $this->runTime = time();
-
         $this->cacheDir = File::path('cache');
         File::createDir($this->cacheDir);
     }
@@ -163,32 +129,12 @@ class Cache
     }
 
     /**
-     * Manually expire this cache.
-     *
-     * @return boolean Whether the cache was expired
-     */
-    public function expire()
-    {
-        return $this->getCache()->set('expireTime', 0);
-    }
-
-    /**
-     * Find whether this cache's content is expired.
-     *
-     * @return boolean Whether expired
-     */
-    public function isExpired()
-    {
-        return $this->getCache()->get('expireTime') <= $this->runTime();
-    }
-
-    /**
      * Clear this cache.
      *
      * @return boolean Whether the cache was cleared
      */
     public function clear()
     {
-        return File::deleteDir($this->getCacheDir());
+        return unlink($this->getCachePath());
     }
 }

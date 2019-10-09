@@ -12,7 +12,7 @@ class CacheTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetAndGet()
     {
-        $cache = new Cache('my_key');
+        $cache = new Cache('cache_id');
         $data = ['items' => [1, 2, 3]];
 
         $cache->set($data);

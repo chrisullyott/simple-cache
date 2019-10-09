@@ -55,11 +55,11 @@ class Cache
     private $container = 'cache';
 
     /**
-     * The path for this cache directory.
+     * The cache directory path.
      *
      * @var string
      */
-    private $cachePath;
+    private $cacheDir;
 
     /**
      * This cache's catalog.
@@ -143,13 +143,13 @@ class Cache
      *
      * @return string
      */
-    private function getCachePath()
+    private function getCacheDir()
     {
-        if (!$this->cachePath) {
-            $this->cachePath = File::path($this->container, $this->getKey());
+        if (!$this->cacheDir) {
+            $this->cacheDir = File::path($this->container, $this->getKey());
         }
 
-        return $this->cachePath;
+        return $this->cacheDir;
     }
 
     /**
@@ -159,7 +159,7 @@ class Cache
      */
     private function getCatalogPath()
     {
-        return File::path($this->getCachePath(), '.catalog');
+        return File::path($this->getCacheDir(), '.catalog');
     }
 
     /**
@@ -184,7 +184,7 @@ class Cache
     private function init()
     {
         // Create the directory if it doesn't exist
-        File::createDir($this->getCachePath());
+        File::createDir($this->getCacheDir());
 
         // Build and save a new catalog file
         $props = [
@@ -236,6 +236,6 @@ class Cache
      */
     public function clear()
     {
-        return File::deleteDir($this->getCachePath());
+        return File::deleteDir($this->getCacheDir());
     }
 }

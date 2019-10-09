@@ -50,18 +50,6 @@ class Time
     }
 
     /**
-     * Get the timestamp of the next cleanup time (midnight), optionally offset by
-     * an additional number of hours.
-     *
-     * @param  integer $hoursPastMidnight The number of hours past midnight
-     * @return integer
-     */
-    public static function nextCleanup($hoursPastMidnight = 0)
-    {
-        return strtotime('tomorrow midnight') + ($hoursPastMidnight * 60 * 60);
-    }
-
-    /**
      * Takes either a timestamp or a date string, and always returns a timestamp.
      *
      * @param  string|integer $dateOrTime Either a timestamp or date string

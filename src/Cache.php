@@ -213,7 +213,6 @@ class Cache
             'expire'       => $this->expire,
             'createdTime'  => $this->getRunTime(),
             'expireTime'   => Time::nextExpire($this->expire),
-            'cleanupTime'  => Time::nextCleanup(),
             'historyLimit' => $this->historyLimit,
             'history'      => []
         ];
@@ -252,8 +251,7 @@ class Cache
     }
 
     /**
-     * Store a value in the cache, and catalog the new history state. Also performs
-     * cleanup if it's cleanup time.
+     * Store a value in the cache, and catalog the new history state.
      *
      * @param  string $contents    The contents to store
      * @param  array  $historyData Extra information about this history state
@@ -264,7 +262,7 @@ class Cache
         $file = File::availablePath($this->getCachePath());
 
         if (File::write($file, base64_encode(serialize($contents)))) {
-            return $this->addToHistory($file, $historyData) && $this->cleanup();
+            return $this->addToHistory($file, $historyData);
         }
 
         return false;
@@ -331,64 +329,10 @@ class Cache
         array_unshift($history, $historyState);
         $history = array_slice($history, 0, $this->historyLimit);
 
-        return $this->getCatalog()->merge([
+        $this->getCatalog()->merge([
             'history'    => $history,
             'expireTime' => Time::nextExpire($this->expire)
         ]);
-    }
-
-    /**
-     * Delete all non-hidden files in the cache directory, except the allowed number
-     * of history states.
-     *
-     * @return boolean Whether the catalog was updated
-     */
-    private function cleanupHistory()
-    {
-        $history = $this->getHistory();
-        $history = array_slice($history, 0, $this->historyLimit);
-
-        $filesInCache = File::listDir($this->getCachePath());
-        $filesInCache = array_map('basename', $filesInCache);
-
-        $filesToKeep = array_map(
-            function ($arr) {
-                return $arr['file'];
-            }, $history
-        );
-        $filesToDiscard = array_diff($filesInCache, $filesToKeep);
-
-        foreach ($filesToDiscard as $file) {
-            unlink(File::path($this->getCachePath(), $file));
-        }
-
-        return $this->getCatalog()->merge([
-            'cleanupTime' => Time::nextCleanup(),
-            'historyLimit' => $this->historyLimit,
-            'history' => $history
-        ]);
-    }
-
-    /**
-     * Find whether it's cleanup time.
-     *
-     * @return boolean Whether time for cleanup
-     */
-    private function isCleanupTime()
-    {
-        return $this->getCatalog()->get('cleanupTime') <= $this->getRunTime();
-    }
-
-    /**
-     * Delete old history states if it's cleanup time.
-     *
-     * @return boolean Whether we're all cleaned up
-     */
-    public function cleanup()
-    {
-        if ($this->isCleanupTime()) {
-            return $this->cleanupHistory();
-        }
 
         return true;
     }

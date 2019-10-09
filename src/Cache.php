@@ -135,6 +135,6 @@ class Cache
      */
     public function clear()
     {
-        return unlink($this->getCachePath());
+        return !file_exists($this->getCachePath()) || unlink($this->getCachePath());
     }
 }

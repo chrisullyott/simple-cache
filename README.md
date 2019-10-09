@@ -2,8 +2,6 @@
 
 Quick and easy data caching in the filesystem.
 
-Keeps previous entries for future reference and cleans up old entries on a regular basis.
-
 ### Install
 
 ```bash
@@ -16,8 +14,7 @@ $ composer require chrisullyott/simple-cache
 require 'vendor/autoload.php';
 
 use ChrisUllyott\Cache;
-
-$cache = new Cache('my_key');
+$cache = new Cache('cache_id');
 ```
 
 ### Setting data
@@ -30,12 +27,6 @@ $cache->set("Some data");
 
 ```php
 echo $cache->get(); // "Some data"
-```
-
-### Invalidating
-
-```php
-$cache->invalidate();
 ```
 
 ### Clearing 
@@ -52,8 +43,8 @@ $cache->clear();
 require 'vendor/autoload.php';
 
 use ChrisUllyott\Cache;
-
 $cache = new Cache('my_key');
+
 $data = $cache->get();
 
 if (!$data) {
@@ -62,14 +53,6 @@ if (!$data) {
 }
 
 print_r($data);
-```
-
-### Expiration
-
-The cache will expire after a certain amount of time, and `get()` will return false. To set the expiration frequency, use the second parameter of the constructor, for example "hourly", "nightly", or "weekly":
-
-```php
-$cache = new Cache('my_key', 'hourly');
 ```
 
 ### Testing

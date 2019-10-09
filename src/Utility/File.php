@@ -105,4 +105,18 @@ class File
 
         return rmdir($dir);
     }
+
+    /**
+     * Slug a string for safe file naming.
+     *
+     * @param  string $string The string to slug
+     * @return string
+     */
+    public static function slugify($string)
+    {
+        $string = preg_replace('/[^A-Za-z0-9\.-_]+/', ' ', $string);
+        $string = preg_replace('/\s+/', '_', trim($string));
+
+        return strtolower($string);
+    }
 }

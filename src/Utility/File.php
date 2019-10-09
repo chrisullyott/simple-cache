@@ -105,44 +105,4 @@ class File
 
         return rmdir($dir);
     }
-
-    /**
-     * Generate a random filename which isn't already taken in a directory.
-     *
-     * @param  string $dir The directory path
-     * @return string
-     */
-    public static function availablePath($dir)
-    {
-        do {
-            $name = self::randomString();
-            $path = self::path($dir, $name);
-        } while (file_exists($path));
-
-        return $path;
-    }
-
-    /**
-     * Generate a random string using letters and numbers.
-     *
-     * @param  integer $length The length of the string
-     * @return string
-     */
-    private static function randomString($length = 32)
-    {
-        $string = '';
-
-        $characters = array_merge(
-            range('A', 'Z'),
-            range('a', 'z'),
-            range(0, 9)
-        );
-
-        for ($i = 0; $i < $length; $i++) {
-            $key = array_rand($characters);
-            $string .= $characters[$key];
-        }
-
-        return $string;
-    }
 }

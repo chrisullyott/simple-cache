@@ -27,13 +27,6 @@ class Cache
     private $expire = 'weekly';
 
     /**
-     * A number of seconds to add to the expiration.
-     *
-     * @var integer
-     */
-    private $offset;
-
-    /**
      * For fetching by URL - a regular expression newly requested data must match.
      *
      * @var string
@@ -105,7 +98,6 @@ class Cache
     private static $matchedProps = [
         'key',
         'expire',
-        'offset',
         'mustMatch',
         'mustNotMatch'
     ];
@@ -235,11 +227,10 @@ class Cache
         $props = [
             'key'          => $this->getKey(),
             'expire'       => $this->expire,
-            'offset'       => $this->offset,
             'mustMatch'    => $this->mustMatch,
             'mustNotMatch' => $this->mustNotMatch,
             'createdTime'  => $this->getRunTime(),
-            'expireTime'   => Time::nextExpire($this->expire, $this->offset),
+            'expireTime'   => Time::nextExpire($this->expire),
             'cleanupTime'  => Time::nextCleanup(),
             'historyLimit' => $this->historyLimit,
             'history'      => []
@@ -381,7 +372,7 @@ class Cache
 
         return $this->getCatalog()->merge([
             'history'    => $history,
-            'expireTime' => Time::nextExpire($this->expire, $this->offset)
+            'expireTime' => Time::nextExpire($this->expire)
         ]);
     }
 

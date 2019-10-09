@@ -12,10 +12,9 @@ class Time
      * Get the timestamp of the next expiration based on a friendly keyword.
      *
      * @param  string  $expire The keyword denoting an expiration frequency
-     * @param  integer $offset Extra seconds to add to the expiration time
      * @return integer
      */
-    public static function nextExpire($expire, $offset = 0)
+    public static function nextExpire($expire)
     {
         switch ($expire) {
             case is_numeric($expire):
@@ -47,7 +46,7 @@ class Time
                 $time = strtotime('+1 day', strtotime(date('Y-m-d')));
         }
 
-        return $time + $offset;
+        return $time;
     }
 
     /**

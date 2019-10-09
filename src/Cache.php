@@ -27,13 +27,6 @@ class Cache
     private $expire = 'weekly';
 
     /**
-     * The number of history states (files) to keep in this cache.
-     *
-     * @var integer
-     */
-    private $historyLimit = 10;
-
-    /**
      * The time this class began to run.
      *
      * @var integer
@@ -213,7 +206,6 @@ class Cache
             'expire'       => $this->expire,
             'createdTime'  => $this->getRunTime(),
             'expireTime'   => Time::nextExpire($this->expire),
-            'historyLimit' => $this->historyLimit,
             'history'      => []
         ];
 
@@ -327,7 +319,7 @@ class Cache
         ]);
 
         array_unshift($history, $historyState);
-        $history = array_slice($history, 0, $this->historyLimit);
+        $history = array_slice($history, 0, 10);
 
         $this->getCatalog()->merge([
             'history'    => $history,

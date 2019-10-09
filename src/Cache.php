@@ -27,20 +27,6 @@ class Cache
     private $expire = 'weekly';
 
     /**
-     * For fetching by URL - a regular expression newly requested data must match.
-     *
-     * @var string
-     */
-    private $mustMatch;
-
-    /**
-     * For fetching by URL - a regular expression newly requested data cannot match.
-     *
-     * @var string
-     */
-    private $mustNotMatch;
-
-    /**
      * The number of history states (files) to keep in this cache.
      *
      * @var integer
@@ -97,9 +83,7 @@ class Cache
      */
     private static $matchedProps = [
         'key',
-        'expire',
-        'mustMatch',
-        'mustNotMatch'
+        'expire'
     ];
 
     /**
@@ -227,8 +211,6 @@ class Cache
         $props = [
             'key'          => $this->getKey(),
             'expire'       => $this->expire,
-            'mustMatch'    => $this->mustMatch,
-            'mustNotMatch' => $this->mustNotMatch,
             'createdTime'  => $this->getRunTime(),
             'expireTime'   => Time::nextExpire($this->expire),
             'cleanupTime'  => Time::nextCleanup(),
@@ -281,11 +263,8 @@ class Cache
     {
         $file = File::availablePath($this->getCachePath());
 
-        // Stop if regexes do not allow this content.
-        if ($this->passesRegex($contents)) {
-            if (File::write($file, base64_encode(serialize($contents)))) {
-                return $this->addToHistory($file, $historyData) && $this->cleanup();
-            }
+        if (File::write($file, base64_encode(serialize($contents)))) {
+            return $this->addToHistory($file, $historyData) && $this->cleanup();
         }
 
         return false;
@@ -303,24 +282,6 @@ class Cache
         }
 
         return false;
-    }
-
-    /**
-     * Determine whether a string passes defined regex tests.
-     *
-     * @param  string $string The string to operate on
-     * @return boolean
-     */
-    private function passesRegex($string)
-    {
-        if (($this->mustMatch && preg_match($this->mustMatch, $string) === 0)
-            ||
-            ($this->mustNotMatch && preg_match($this->mustNotMatch, $string) === 1)
-        ) {
-            return false;
-        }
-
-        return true;
     }
 
     /**

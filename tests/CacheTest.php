@@ -13,11 +13,9 @@ class CacheTest extends \PHPUnit_Framework_TestCase
     public function testSetAndGet()
     {
         $cache = new Cache('my_key');
+        $data = ['items' => [1, 2, 3]];
 
-        $set = $cache->set(['data' => 'Some data']);
-        $this->assertTrue($set);
-
-        $get = $cache->get();
-        $this->assertNotEmpty($get);
+        $cache->set($data);
+        $this->assertSame($cache->get(), $data);
     }
 }

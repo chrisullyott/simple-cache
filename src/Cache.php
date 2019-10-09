@@ -17,7 +17,7 @@ class Cache
      *
      * @var string
      */
-    private $key;
+    public $key;
 
     /**
      * The expiration frequency of this cache.
@@ -55,139 +55,121 @@ class Cache
     private $cacheDir;
 
     /**
-     * This cache's catalog.
+     * This cache's path.
      *
-     * @var Catalog
+     * @var string
      */
-    private $catalog;
+    private $cachePath;
+
+    /**
+     * The cache data object.
+     *
+     * @var Log
+     */
+    private $cache;
+
+    /**
+     * The names of the properties that will be saved to disk.
+     *
+     * @var array
+     */
+    private static $storedProperties = [
+        'key',
+        'expire',
+        'createdTime',
+        'expireTime'
+    ];
 
     /**
      * Constructor.
+     *
+     * @param string $key This cache key
      */
-    public function __construct()
+    public function __construct($key)
     {
-        $a = func_get_args();
+        $this->runTime = time();
+        $this->key = $key;
 
-        // Set properties.
-        if (is_array($a[0])) {
-            $this->setProperties($a[0]);
-        } else {
-            if (isset($a[0])) {
-                $this->key = $a[0];
-            }
-
-            if (isset($a[1])) {
-                $this->expire = $a[1];
-            }
-        }
-
-        $this->init();
+        $this->cacheDir = File::path('cache');
+        File::createDir($this->cacheDir);
     }
 
     /**
-     * Set multiple properties of this object via an associative array.
+     * Get the path to the cache file.
      *
-     * @param array $properties An associative array of property names and values
-     * @return self
+     * @return string
      */
-    private function setProperties(array $properties)
+    private function getCachePath()
     {
-        foreach ($properties as $name => $value) {
-            if (property_exists($this, $name)) {
-                $this->{$name} = $value;
-            } else {
-                throw new Exception("{$name} is not a valid property");
-            }
+        if (!$this->cachePath) {
+            $filename = File::slugify($this->key) . '.json';
+            $this->cachePath = File::path($this->cacheDir, $filename);
         }
+
+        return $this->cachePath;
+    }
+
+    /**
+     * Get the cache data object.
+     *
+     * @return Log
+     */
+    private function getCache()
+    {
+        if (!$this->cache) {
+            $this->cache = new Log($this->getCachePath());
+            $this->cache->merge($this->getStoredProperties());
+        }
+
+        return $this->cache;
+    }
+
+    /**
+     * Get the properties that will be saved to disk.
+     *
+     * @return array
+     */
+    private function getStoredProperties()
+    {
+        $props = get_object_vars($this);
+        $props_stored = array_flip(static::$storedProperties);
+
+        return array_intersect_key($props, $props_stored);
+    }
+
+    /**
+     * Store some data in this cache.
+     *
+     * @param mixed $value The data to store
+     */
+    public function set($value)
+    {
+        $data = base64_encode(serialize($value));
+        $this->getCache()->set('data', $data);
 
         return $this;
     }
 
     /**
-     * What time is it?  |(• ◡•)|/ \(❍ᴥ❍ʋ)
+     * Get the data out of this cache.
      *
-     * @return integer
+     * @return mixed
      */
-    private function getRunTime()
+    public function get()
     {
-        if (!$this->runTime) {
-            $this->runTime = time();
-        }
+        $data = $this->getCache()->get('data');
 
-        return $this->runTime;
+        return unserialize(base64_decode($data));
     }
 
     /**
-     * Get this cache's key.
+     * Manually expire this cache.
      *
-     * @return string
+     * @return boolean Whether the cache was expired
      */
-    private function getKey()
+    public function expire()
     {
-        if (!$this->key) {
-            throw new Exception('Cache key is missing');
-        }
-
-        return $this->key;
-    }
-
-    /**
-     * Get the path to this cache.
-     *
-     * @return string
-     */
-    private function getCacheDir()
-    {
-        if (!$this->cacheDir) {
-            $this->cacheDir = File::path('cache');
-        }
-
-        return $this->cacheDir;
-    }
-
-    /**
-     * Get the catalog path.
-     *
-     * @return string
-     */
-    private function getCatalogPath()
-    {
-        return File::path($this->getCacheDir(), '.catalog');
-    }
-
-    /**
-     * Get the Catalog object belonging to this cache.
-     *
-     * @return Catalog
-     */
-    private function getCatalog()
-    {
-        if (!$this->catalog) {
-            $this->catalog = new Log($this->getCatalogPath());
-        }
-
-        return $this->catalog;
-    }
-
-    /**
-     * Initialize a new cache by clearing its directory and building a new catalog.
-     *
-     * @return boolean Whether the cache was set up
-     */
-    private function init()
-    {
-        // Create the directory if it doesn't exist
-        File::createDir($this->getCacheDir());
-
-        // Build and save a new catalog file
-        $props = [
-            'key'          => $this->getKey(),
-            'expire'       => $this->expire,
-            'createdTime'  => $this->getRunTime(),
-            'expireTime'   => Time::nextExpire($this->expire)
-        ];
-
-        return $this->getCatalog()->setAll($props);
+        return $this->getCache()->set('expireTime', 0);
     }
 
     /**
@@ -197,29 +179,7 @@ class Cache
      */
     public function isExpired()
     {
-        return $this->getCatalog()->get('expireTime') <= $this->getRunTime();
-    }
-
-    /**
-     * Get the latest data from the cache. Return false if expired or unreadable.
-     *
-     * @return string
-     */
-    public function get()
-    {
-        // get
-
-        return false;
-    }
-
-    /**
-     * Invalidate this cache.
-     *
-     * @return boolean Whether the cache was invalidated
-     */
-    public function invalidate()
-    {
-        return $this->getCatalog()->set('expireTime', 0);
+        return $this->getCache()->get('expireTime') <= $this->runTime();
     }
 
     /**

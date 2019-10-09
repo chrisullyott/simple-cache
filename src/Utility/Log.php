@@ -138,7 +138,6 @@ class Log
     public function __destruct()
     {
         if ($this->hasChanged()) {
-            File::createDir(dirname($this->file));
             File::write($this->file, json_encode($this->data));
         }
     }

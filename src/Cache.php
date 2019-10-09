@@ -13,11 +13,11 @@ use ChrisUllyott\Utility\File;
 class Cache
 {
     /**
-     * The key (essentially, the ID) of this cache.
+     * The ID of this cache.
      *
      * @var string
      */
-    public $key;
+    public $id;
 
     /**
      * The expiration frequency of this cache.
@@ -74,7 +74,7 @@ class Cache
      * @var array
      */
     private static $storedProperties = [
-        'key',
+        'id',
         'expire',
         'createdTime',
         'expireTime'
@@ -83,12 +83,12 @@ class Cache
     /**
      * Constructor.
      *
-     * @param string $key This cache key
+     * @param string $id This cache ID
      */
-    public function __construct($key)
+    public function __construct($id)
     {
+        $this->id = $id;
         $this->runTime = time();
-        $this->key = $key;
 
         $this->cacheDir = File::path('cache');
         File::createDir($this->cacheDir);
@@ -102,7 +102,7 @@ class Cache
     private function getCachePath()
     {
         if (!$this->cachePath) {
-            $filename = File::slugify($this->key) . '.json';
+            $filename = File::slugify($this->id) . '.json';
             $this->cachePath = File::path($this->cacheDir, $filename);
         }
 

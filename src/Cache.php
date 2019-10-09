@@ -205,8 +205,7 @@ class Cache
             'key'          => $this->getKey(),
             'expire'       => $this->expire,
             'createdTime'  => $this->getRunTime(),
-            'expireTime'   => Time::nextExpire($this->expire),
-            'history'      => []
+            'expireTime'   => Time::nextExpire($this->expire)
         ];
 
         return $this->getCatalog()->setAll($props);
@@ -243,90 +242,15 @@ class Cache
     }
 
     /**
-     * Store a value in the cache, and catalog the new history state.
-     *
-     * @param  string $contents    The contents to store
-     * @param  array  $historyData Extra information about this history state
-     * @return boolean             Whether the cache was updated
-     */
-    public function set($contents, array $historyData = [])
-    {
-        $file = File::availablePath($this->getCachePath());
-
-        if (File::write($file, base64_encode(serialize($contents)))) {
-            return $this->addToHistory($file, $historyData);
-        }
-
-        return false;
-    }
-
-    /**
      * Get the latest data from the cache. Return false if expired or unreadable.
      *
      * @return string
      */
     public function get()
     {
-        if (!$this->isExpired()) {
-            return $this->readFromHistory();
-        }
+        // get
 
         return false;
-    }
-
-    /**
-     * Get the history list.
-     *
-     * @return array
-     */
-    private function getHistory()
-    {
-        return $this->getCatalog()->get('history');
-    }
-
-    /**
-     * Read the contents of the cache in a given history state.
-     *
-     * @param  integer $index Which history state to read (defaults to latest)
-     * @return string|boolean The contents of the file in storage
-     */
-    private function readFromHistory($index = 0)
-    {
-        $history = $this->getHistory();
-
-        if (isset($history[$index]['file'])) {
-            $file = File::path($this->getCachePath(), $history[$index]['file']);
-            return unserialize(base64_decode(File::read($file)));
-        }
-
-        return null;
-    }
-
-    /**
-     * Log a newly created cache file as a history state.
-     *
-     * @param string $file      The path to this history state
-     * @param array  $extraData Extra data to save along with this history state
-     * @return boolean Whether the catalog was updated
-     */
-    private function addToHistory($file, array $extraData = [])
-    {
-        $history = $this->getHistory();
-
-        $historyState = array_merge($extraData, [
-            'file' => basename($file),
-            'time' => $this->getRunTime()
-        ]);
-
-        array_unshift($history, $historyState);
-        $history = array_slice($history, 0, 10);
-
-        $this->getCatalog()->merge([
-            'history'    => $history,
-            'expireTime' => Time::nextExpire($this->expire)
-        ]);
-
-        return true;
     }
 
     /**

@@ -69,17 +69,6 @@ class Cache
     private $catalog;
 
     /**
-     * If these object properties aren't equal to those stored in the catalog, the
-     * cache is cleared and then rebuilt to keep current.
-     *
-     * @var array
-     */
-    private static $matchedProps = [
-        'key',
-        'expire'
-    ];
-
-    /**
      * Constructor.
      */
     public function __construct()
@@ -99,10 +88,7 @@ class Cache
             }
         }
 
-        // Initialize if invalid.
-        if (!$this->isValid()) {
-            $this->init();
-        }
+        $this->init();
     }
 
     /**
@@ -209,26 +195,6 @@ class Cache
         ];
 
         return $this->getCatalog()->setAll($props);
-    }
-
-    /**
-     * Determine whether this cache is valid by checking whether the catalog exists,
-     * and whether the most relevant properties match those in the instantiated
-     * Catalog object.
-     *
-     * @return boolean Whether the cache is valid
-     */
-    private function isValid()
-    {
-        $props = $this->getCatalog()->getAll();
-
-        foreach (self::$matchedProps as $p) {
-            if (!array_key_exists($p, $props) || ($props[$p] !== $this->{$p})) {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     /**

@@ -7,7 +7,6 @@
 namespace ChrisUllyott;
 
 use ChrisUllyott\Log;
-use ChrisUllyott\Utility\File;
 
 class Cache
 {
@@ -19,11 +18,11 @@ class Cache
     public $id;
 
     /**
-     * The cache directory path.
+     * The cache directory.
      *
      * @var string
      */
-    private $cacheDir;
+    private $cacheDir = 'cache';
 
     /**
      * This cache's path.
@@ -47,8 +46,10 @@ class Cache
     public function __construct($id)
     {
         $this->id = $id;
-        $this->cacheDir = File::path('cache');
-        File::createDir($this->cacheDir);
+
+        if (!is_dir($this->cacheDir)) {
+            mkdir($this->cacheDir);
+        }
     }
 
     /**
@@ -59,8 +60,8 @@ class Cache
     private function getCachePath()
     {
         if (!$this->cachePath) {
-            $filename = sha1($this->id);
-            $this->cachePath = File::path($this->cacheDir, $filename);
+            $sep = DIRECTORY_SEPARATOR;
+            $this->cachePath = $this->cacheDir . $sep . sha1($this->id);
         }
 
         return $this->cachePath;

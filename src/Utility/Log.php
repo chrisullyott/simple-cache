@@ -49,7 +49,7 @@ class Log
     /**
      * Get a stored value by key.
      *
-     * @param  string|integer $key The item key
+     * @param  mixed $key The item key
      * @return mixed
      */
     public function get($key)
@@ -70,8 +70,8 @@ class Log
     /**
      * Persist a value by key.
      *
-     * @param string|integer $key   The key to use
-     * @param string|integer $value The value to store
+     * @param mixed $key   The key to use
+     * @param mixed $value The value to store
      * @return self
      */
     public function set($key, $value)
@@ -110,7 +110,7 @@ class Log
     /**
      * Delete an item by key.
      *
-     * @param string|integer $key The key to use
+     * @param mixed $key The key to use
      * @return self
      */
     public function delete($key)

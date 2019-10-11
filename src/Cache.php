@@ -6,7 +6,7 @@
 
 namespace ChrisUllyott;
 
-use ChrisUllyott\Utility\Log;
+use ChrisUllyott\Log;
 use ChrisUllyott\Utility\File;
 
 class Cache
@@ -38,15 +38,6 @@ class Cache
      * @var Log
      */
     private $cache;
-
-    /**
-     * The names of the properties that will be saved to disk.
-     *
-     * @var array
-     */
-    private static $storedProperties = [
-        'id'
-    ];
 
     /**
      * Constructor.
@@ -84,23 +75,10 @@ class Cache
     {
         if (!$this->cache) {
             $this->cache = new Log($this->getCachePath());
-            $this->cache->merge($this->getStoredProperties());
+            $this->cache->set('id', $this->id);
         }
 
         return $this->cache;
-    }
-
-    /**
-     * Get the properties that will be saved to disk.
-     *
-     * @return array
-     */
-    private function getStoredProperties()
-    {
-        $props = get_object_vars($this);
-        $props_stored = array_flip(static::$storedProperties);
-
-        return array_intersect_key($props, $props_stored);
     }
 
     /**

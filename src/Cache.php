@@ -12,7 +12,7 @@ use ChrisUllyott\Utility\File;
 class Cache
 {
     /**
-     * The ID of this cache.
+     * A string that identifies this cache.
      *
      * @var string
      */
@@ -59,7 +59,7 @@ class Cache
     private function getCachePath()
     {
         if (!$this->cachePath) {
-            $filename = File::slugify($this->id) . '.json';
+            $filename = sha1($this->id);
             $this->cachePath = File::path($this->cacheDir, $filename);
         }
 

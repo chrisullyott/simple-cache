@@ -22,7 +22,7 @@ class Cache
      *
      * @var string
      */
-    private $cacheDir = 'cache';
+    private $cacheDir;
 
     /**
      * This cache's path.
@@ -42,10 +42,13 @@ class Cache
      * Constructor.
      *
      * @param string $id This cache ID
+     * @param string $cacheDir The cache directory
      */
-    public function __construct($id)
+    public function __construct($id, $cacheDir = null)
     {
         $this->id = $id;
+
+        $this->cacheDir = $cacheDir ? $cacheDir : './cache';
 
         if (!is_dir($this->cacheDir)) {
             mkdir($this->cacheDir);
